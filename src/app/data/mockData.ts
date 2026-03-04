@@ -50,6 +50,36 @@ export interface Supplier {
   creditTrendVelocity: number;
 }
 
+const REQUIRED_SUPPLIER_DOCUMENTS = [
+  "Business Registration",
+  "Entry In The Register Of Skilled Trades",
+  "Commercial Register Extract",
+  "Social Security Clearence Certificates",
+  "Certificates Of Compliance From The Employers' Liability Insurance Association",
+  "Certificate In Tax Matters",
+  "Business Liability Insurance",
+  "Business Partner Code Of Conduct",
+  "Payment Terms",
+] as const;
+
+type RequiredSupplierDocumentName = (typeof REQUIRED_SUPPLIER_DOCUMENTS)[number];
+type RequiredDocumentOverrides = Partial<Record<RequiredSupplierDocumentName, Omit<Document, "name">>>;
+
+function buildRequiredDocuments(overrides: RequiredDocumentOverrides): Document[] {
+  return REQUIRED_SUPPLIER_DOCUMENTS.map((name) => {
+    const override = overrides[name];
+    if (override) {
+      return { name, ...override };
+    }
+    return {
+      name,
+      status: "Missing",
+      expiryDate: "—",
+      lastUploaded: "—",
+    };
+  });
+}
+
 export const suppliers: Supplier[] = [
   {
     id: "sup-001",
@@ -88,13 +118,15 @@ export const suppliers: Supplier[] = [
       { id: "a3", type: "esg", description: "Environmental audit overdue by 45 days", severity: "High", dateDetected: "2026-01-20", resolved: false },
       { id: "a4", type: "structural", description: "Single-source dependency identified in critical component", severity: "Medium", dateDetected: "2026-02-01", resolved: false },
     ],
-    documents: [
-      { name: "ISO 9001 Certificate", status: "Expiring", expiryDate: "2026-03-22", lastUploaded: "2024-03-22", daysRemaining: 18 },
-      { name: "Trade License", status: "Valid", expiryDate: "2026-12-31", lastUploaded: "2025-01-10", daysRemaining: 302 },
-      { name: "Environmental Compliance", status: "Missing", expiryDate: "—", lastUploaded: "—" },
-      { name: "GDPR Data Processing Agreement", status: "Valid", expiryDate: "2027-01-01", lastUploaded: "2025-01-01", daysRemaining: 303 },
-      { name: "Insurance Certificate", status: "Expiring", expiryDate: "2026-03-30", lastUploaded: "2025-03-30", daysRemaining: 26 },
-    ],
+    documents: buildRequiredDocuments({
+      "Business Registration": { status: "Valid", expiryDate: "2027-01-15", lastUploaded: "2025-01-15", daysRemaining: 317 },
+      "Commercial Register Extract": { status: "Valid", expiryDate: "2026-12-01", lastUploaded: "2025-12-01", daysRemaining: 272 },
+      "Social Security Clearence Certificates": { status: "Expiring", expiryDate: "2026-03-22", lastUploaded: "2025-03-22", daysRemaining: 18 },
+      "Certificate In Tax Matters": { status: "Expiring", expiryDate: "2026-03-30", lastUploaded: "2025-03-30", daysRemaining: 26 },
+      "Business Liability Insurance": { status: "Expiring", expiryDate: "2026-03-18", lastUploaded: "2025-03-18", daysRemaining: 14 },
+      "Business Partner Code Of Conduct": { status: "Valid", expiryDate: "2027-05-01", lastUploaded: "2025-05-01", daysRemaining: 422 },
+      "Payment Terms": { status: "Valid", expiryDate: "2027-01-01", lastUploaded: "2025-01-01", daysRemaining: 303 },
+    }),
   },
   {
     id: "sup-002",
@@ -131,12 +163,15 @@ export const suppliers: Supplier[] = [
       { id: "a5", type: "compliance", description: "Workers compensation policy renewal needed", severity: "Medium", dateDetected: "2026-02-10", resolved: false },
       { id: "a6", type: "esg", description: "Carbon reporting incomplete for Q4 2025", severity: "Low", dateDetected: "2026-01-28", resolved: false },
     ],
-    documents: [
-      { name: "ISO 14001 Certificate", status: "Valid", expiryDate: "2027-06-30", lastUploaded: "2025-07-01", daysRemaining: 483 },
-      { name: "Workers Compensation Policy", status: "Expiring", expiryDate: "2026-04-01", lastUploaded: "2025-04-01", daysRemaining: 28 },
-      { name: "Trade License", status: "Valid", expiryDate: "2026-09-30", lastUploaded: "2025-10-01", daysRemaining: 210 },
-      { name: "Data Processing Agreement", status: "Valid", expiryDate: "2028-01-01", lastUploaded: "2025-01-15" },
-    ],
+    documents: buildRequiredDocuments({
+      "Business Registration": { status: "Valid", expiryDate: "2027-06-30", lastUploaded: "2025-07-01", daysRemaining: 483 },
+      "Entry In The Register Of Skilled Trades": { status: "Valid", expiryDate: "2027-03-01", lastUploaded: "2025-03-01", daysRemaining: 362 },
+      "Commercial Register Extract": { status: "Valid", expiryDate: "2026-09-30", lastUploaded: "2025-10-01", daysRemaining: 210 },
+      "Social Security Clearence Certificates": { status: "Expiring", expiryDate: "2026-04-01", lastUploaded: "2025-04-01", daysRemaining: 28 },
+      "Certificate In Tax Matters": { status: "Valid", expiryDate: "2027-01-10", lastUploaded: "2025-01-10", daysRemaining: 312 },
+      "Business Liability Insurance": { status: "Valid", expiryDate: "2027-12-01", lastUploaded: "2025-12-01", daysRemaining: 637 },
+      "Payment Terms": { status: "Valid", expiryDate: "2027-01-01", lastUploaded: "2025-01-15", daysRemaining: 303 },
+    }),
   },
   {
     id: "sup-003",
@@ -170,11 +205,17 @@ export const suppliers: Supplier[] = [
     creditTrendVelocity: -1.8,
     openAlerts: 0,
     alerts: [],
-    documents: [
-      { name: "ISO 9001 Certificate", status: "Valid", expiryDate: "2027-01-10", lastUploaded: "2025-01-10", daysRemaining: 312 },
-      { name: "Environmental Permit", status: "Valid", expiryDate: "2027-03-01", lastUploaded: "2025-03-01", daysRemaining: 362 },
-      { name: "Trade License", status: "Valid", expiryDate: "2026-12-01", lastUploaded: "2025-12-01", daysRemaining: 272 },
-    ],
+    documents: buildRequiredDocuments({
+      "Business Registration": { status: "Valid", expiryDate: "2027-01-10", lastUploaded: "2025-01-10", daysRemaining: 312 },
+      "Entry In The Register Of Skilled Trades": { status: "Valid", expiryDate: "2027-03-01", lastUploaded: "2025-03-01", daysRemaining: 362 },
+      "Commercial Register Extract": { status: "Valid", expiryDate: "2026-12-01", lastUploaded: "2025-12-01", daysRemaining: 272 },
+      "Social Security Clearence Certificates": { status: "Valid", expiryDate: "2027-02-15", lastUploaded: "2025-02-15", daysRemaining: 348 },
+      "Certificates Of Compliance From The Employers' Liability Insurance Association": { status: "Valid", expiryDate: "2027-04-01", lastUploaded: "2025-04-01", daysRemaining: 393 },
+      "Certificate In Tax Matters": { status: "Valid", expiryDate: "2027-01-20", lastUploaded: "2025-01-20", daysRemaining: 322 },
+      "Business Liability Insurance": { status: "Valid", expiryDate: "2027-06-30", lastUploaded: "2025-06-30", daysRemaining: 483 },
+      "Business Partner Code Of Conduct": { status: "Valid", expiryDate: "2027-07-01", lastUploaded: "2025-07-01", daysRemaining: 484 },
+      "Payment Terms": { status: "Valid", expiryDate: "2027-05-01", lastUploaded: "2025-05-01", daysRemaining: 422 },
+    }),
   },
   {
     id: "sup-004",
@@ -212,12 +253,14 @@ export const suppliers: Supplier[] = [
       { id: "a8", type: "structural", description: "Key personnel dependency risk identified", severity: "Medium", dateDetected: "2026-01-15", resolved: false },
       { id: "a9", type: "financial", description: "Delayed invoice payments detected (30+ days)", severity: "Low", dateDetected: "2026-02-18", resolved: false },
     ],
-    documents: [
-      { name: "GDPR DPA", status: "Expiring", expiryDate: "2026-04-10", lastUploaded: "2024-04-10", daysRemaining: 37 },
-      { name: "ISO 27001 Certificate", status: "Valid", expiryDate: "2027-05-01", lastUploaded: "2025-05-01", daysRemaining: 422 },
-      { name: "Cyber Security Policy", status: "Expiring", expiryDate: "2026-03-15", lastUploaded: "2025-03-15", daysRemaining: 11 },
-      { name: "Business Continuity Plan", status: "Valid", expiryDate: "2027-01-01", lastUploaded: "2025-01-01" },
-    ],
+    documents: buildRequiredDocuments({
+      "Business Registration": { status: "Valid", expiryDate: "2027-05-01", lastUploaded: "2025-05-01", daysRemaining: 422 },
+      "Commercial Register Extract": { status: "Valid", expiryDate: "2026-11-20", lastUploaded: "2025-11-20", daysRemaining: 261 },
+      "Social Security Clearence Certificates": { status: "Expiring", expiryDate: "2026-03-15", lastUploaded: "2025-03-15", daysRemaining: 11 },
+      "Certificate In Tax Matters": { status: "Expiring", expiryDate: "2026-04-10", lastUploaded: "2024-04-10", daysRemaining: 37 },
+      "Business Partner Code Of Conduct": { status: "Valid", expiryDate: "2027-01-01", lastUploaded: "2025-01-01", daysRemaining: 303 },
+      "Payment Terms": { status: "Valid", expiryDate: "2027-02-01", lastUploaded: "2025-02-01", daysRemaining: 334 },
+    }),
   },
   {
     id: "sup-005",
@@ -257,13 +300,15 @@ export const suppliers: Supplier[] = [
       { id: "a13", type: "esg", description: "Labor rights audit finding unresolved", severity: "High", dateDetected: "2025-12-20", resolved: false },
       { id: "a14", type: "structural", description: "Geopolitical risk flag – Baltic region", severity: "Medium", dateDetected: "2026-01-10", resolved: false },
     ],
-    documents: [
-      { name: "ISO 14001 Certificate", status: "Expiring", expiryDate: "2026-03-25", lastUploaded: "2024-03-25", daysRemaining: 21 },
-      { name: "Emissions Report 2025", status: "Missing", expiryDate: "—", lastUploaded: "—" },
-      { name: "Trade License", status: "Expiring", expiryDate: "2026-04-15", lastUploaded: "2025-04-15", daysRemaining: 42 },
-      { name: "Quality Certificate", status: "Valid", expiryDate: "2027-02-01", lastUploaded: "2025-02-01" },
-      { name: "Safety Audit Report", status: "Expiring", expiryDate: "2026-03-10", lastUploaded: "2025-03-10", daysRemaining: 6 },
-    ],
+    documents: buildRequiredDocuments({
+      "Business Registration": { status: "Expiring", expiryDate: "2026-03-25", lastUploaded: "2024-03-25", daysRemaining: 21 },
+      "Commercial Register Extract": { status: "Expiring", expiryDate: "2026-04-15", lastUploaded: "2025-04-15", daysRemaining: 42 },
+      "Social Security Clearence Certificates": { status: "Expiring", expiryDate: "2026-03-10", lastUploaded: "2025-03-10", daysRemaining: 6 },
+      "Certificates Of Compliance From The Employers' Liability Insurance Association": { status: "Expiring", expiryDate: "2026-03-28", lastUploaded: "2025-03-28", daysRemaining: 24 },
+      "Certificate In Tax Matters": { status: "Valid", expiryDate: "2027-02-01", lastUploaded: "2025-02-01", daysRemaining: 334 },
+      "Business Partner Code Of Conduct": { status: "Valid", expiryDate: "2026-10-01", lastUploaded: "2025-10-01", daysRemaining: 211 },
+      "Payment Terms": { status: "Valid", expiryDate: "2027-01-10", lastUploaded: "2025-01-10", daysRemaining: 312 },
+    }),
   },
   {
     id: "sup-006",
@@ -299,11 +344,16 @@ export const suppliers: Supplier[] = [
     alerts: [
       { id: "a15", type: "compliance", description: "Annual review document submission pending", severity: "Low", dateDetected: "2026-02-22", resolved: false },
     ],
-    documents: [
-      { name: "ISO 9001 Certificate", status: "Valid", expiryDate: "2028-02-14", lastUploaded: "2025-02-14" },
-      { name: "Environmental Permit", status: "Valid", expiryDate: "2027-06-01", lastUploaded: "2025-06-01" },
-      { name: "Trade License", status: "Valid", expiryDate: "2026-12-31", lastUploaded: "2025-12-31" },
-    ],
+    documents: buildRequiredDocuments({
+      "Business Registration": { status: "Valid", expiryDate: "2028-02-14", lastUploaded: "2025-02-14", daysRemaining: 811 },
+      "Entry In The Register Of Skilled Trades": { status: "Valid", expiryDate: "2027-06-01", lastUploaded: "2025-06-01", daysRemaining: 454 },
+      "Commercial Register Extract": { status: "Valid", expiryDate: "2026-12-31", lastUploaded: "2025-12-31", daysRemaining: 302 },
+      "Social Security Clearence Certificates": { status: "Valid", expiryDate: "2027-02-20", lastUploaded: "2025-02-20", daysRemaining: 353 },
+      "Certificates Of Compliance From The Employers' Liability Insurance Association": { status: "Valid", expiryDate: "2027-08-01", lastUploaded: "2025-08-01", daysRemaining: 515 },
+      "Certificate In Tax Matters": { status: "Valid", expiryDate: "2027-03-10", lastUploaded: "2025-03-10", daysRemaining: 371 },
+      "Business Liability Insurance": { status: "Valid", expiryDate: "2027-09-30", lastUploaded: "2025-09-30", daysRemaining: 575 },
+      "Business Partner Code Of Conduct": { status: "Valid", expiryDate: "2027-01-31", lastUploaded: "2025-01-31", daysRemaining: 333 },
+    }),
   },
   {
     id: "sup-007",
@@ -340,11 +390,15 @@ export const suppliers: Supplier[] = [
       { id: "a16", type: "esg", description: "Chemical waste disposal permit renewal needed", severity: "Medium", dateDetected: "2026-02-08", resolved: false },
       { id: "a17", type: "compliance", description: "REACH compliance documentation incomplete", severity: "Medium", dateDetected: "2026-01-25", resolved: false },
     ],
-    documents: [
-      { name: "Chemical Handling License", status: "Valid", expiryDate: "2027-09-01", lastUploaded: "2025-09-01" },
-      { name: "REACH Compliance Docs", status: "Expiring", expiryDate: "2026-03-28", lastUploaded: "2024-03-28", daysRemaining: 24 },
-      { name: "Safety Data Sheets", status: "Valid", expiryDate: "2027-01-01", lastUploaded: "2025-01-01" },
-    ],
+    documents: buildRequiredDocuments({
+      "Business Registration": { status: "Valid", expiryDate: "2027-09-01", lastUploaded: "2025-09-01", daysRemaining: 546 },
+      "Commercial Register Extract": { status: "Valid", expiryDate: "2027-01-01", lastUploaded: "2025-01-01", daysRemaining: 303 },
+      "Social Security Clearence Certificates": { status: "Expiring", expiryDate: "2026-03-28", lastUploaded: "2024-03-28", daysRemaining: 24 },
+      "Certificates Of Compliance From The Employers' Liability Insurance Association": { status: "Valid", expiryDate: "2026-11-01", lastUploaded: "2025-11-01", daysRemaining: 242 },
+      "Certificate In Tax Matters": { status: "Valid", expiryDate: "2027-02-15", lastUploaded: "2025-02-15", daysRemaining: 348 },
+      "Business Partner Code Of Conduct": { status: "Valid", expiryDate: "2027-01-15", lastUploaded: "2025-01-15", daysRemaining: 317 },
+      "Payment Terms": { status: "Valid", expiryDate: "2027-04-01", lastUploaded: "2025-04-01", daysRemaining: 393 },
+    }),
   },
   {
     id: "sup-008",
@@ -378,10 +432,16 @@ export const suppliers: Supplier[] = [
     creditTrendVelocity: -0.2,
     openAlerts: 0,
     alerts: [],
-    documents: [
-      { name: "ISO 9001 Certificate", status: "Valid", expiryDate: "2027-11-15", lastUploaded: "2025-11-15" },
-      { name: "CE Marking Documentation", status: "Valid", expiryDate: "2028-01-01", lastUploaded: "2025-01-01" },
-      { name: "Trade License", status: "Valid", expiryDate: "2026-11-30", lastUploaded: "2025-11-30" },
-    ],
+    documents: buildRequiredDocuments({
+      "Business Registration": { status: "Valid", expiryDate: "2027-11-15", lastUploaded: "2025-11-15", daysRemaining: 621 },
+      "Entry In The Register Of Skilled Trades": { status: "Valid", expiryDate: "2028-01-01", lastUploaded: "2025-01-01", daysRemaining: 668 },
+      "Commercial Register Extract": { status: "Valid", expiryDate: "2026-11-30", lastUploaded: "2025-11-30", daysRemaining: 271 },
+      "Social Security Clearence Certificates": { status: "Valid", expiryDate: "2027-02-01", lastUploaded: "2025-02-01", daysRemaining: 334 },
+      "Certificates Of Compliance From The Employers' Liability Insurance Association": { status: "Valid", expiryDate: "2027-03-15", lastUploaded: "2025-03-15", daysRemaining: 376 },
+      "Certificate In Tax Matters": { status: "Valid", expiryDate: "2027-01-31", lastUploaded: "2025-01-31", daysRemaining: 333 },
+      "Business Liability Insurance": { status: "Valid", expiryDate: "2027-08-20", lastUploaded: "2025-08-20", daysRemaining: 534 },
+      "Business Partner Code Of Conduct": { status: "Valid", expiryDate: "2027-05-10", lastUploaded: "2025-05-10", daysRemaining: 432 },
+      "Payment Terms": { status: "Valid", expiryDate: "2027-04-15", lastUploaded: "2025-04-15", daysRemaining: 407 },
+    }),
   },
 ];

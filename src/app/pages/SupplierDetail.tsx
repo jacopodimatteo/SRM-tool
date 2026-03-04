@@ -6,7 +6,7 @@ import {
   Shield, Leaf, Activity, ExternalLink, Clock, CheckCircle, XCircle
 } from "lucide-react";
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   ScatterChart, Scatter, ZAxis, ReferenceLine
 } from "recharts";
 import { suppliers, type Supplier, type RiskStatus } from "../data/mockData";
@@ -52,7 +52,7 @@ function scoreStatus(score: number): RiskStatus {
   return "green";
 }
 
-type Modal = "financial" | "compliance" | "esg" | null;
+type Modal = "structural" | "financial" | "compliance" | "esg" | null;
 
 export function SupplierDetail() {
   const { id } = useParams();
@@ -77,6 +77,26 @@ export function SupplierDetail() {
   };
 
   const activeAlerts = supplier.alerts.filter(a => !resolvedAlerts.includes(a.id));
+  const structuralRevenueHistory = supplier.schufaHistory.map((point, index, allMonths) => {
+    const trendDirection = supplier.trend === "up" ? 1 : supplier.trend === "down" ? -1 : 0;
+    const midpoint = (allMonths.length - 1) / 2;
+    const directionalSwing = (index - midpoint) * 0.012 * trendDirection;
+    const seasonalSwing = Math.sin((index / allMonths.length) * Math.PI * 2) * 0.03;
+    const dependencyVolatility = supplier.dependencyLevel === "High" ? 0.025 : supplier.dependencyLevel === "Medium" ? 0.015 : 0.01;
+    const alternating = index % 2 === 0 ? dependencyVolatility : -dependencyVolatility;
+    const multiplier = 1 + directionalSwing + seasonalSwing + alternating;
+
+    return {
+      month: point.month,
+      revenue: Math.max(0, Math.round(supplier.revenueExposure * multiplier)),
+    };
+  });
+
+  const structuralAvgRevenue = Math.round(
+    structuralRevenueHistory.reduce((sum, entry) => sum + entry.revenue, 0) / structuralRevenueHistory.length
+  );
+  const structuralMaxRevenue = Math.max(...structuralRevenueHistory.map(entry => entry.revenue));
+  const structuralMinRevenue = Math.min(...structuralRevenueHistory.map(entry => entry.revenue));
 
   return (
     <div className="p-6 space-y-6">
@@ -185,7 +205,7 @@ export function SupplierDetail() {
             </div>
             <ProgressBar value={supplier.structuralRiskScore} status={scoreStatus(supplier.structuralRiskScore)} />
             <p className="text-xs text-gray-400 mt-2">ABC Class: {supplier.abcClass} • Dependency: {supplier.dependencyLevel}</p>
-            <button className="mt-3 w-full px-3 py-1.5 text-xs font-medium text-purple-600 border border-purple-200 rounded-lg hover:bg-purple-50">
+            <button onClick={() => setModal("structural")} className="mt-3 w-full px-3 py-1.5 text-xs font-medium text-purple-600 border border-purple-200 rounded-lg hover:bg-purple-50">
               View Details
             </button>
           </div>
@@ -392,6 +412,47 @@ export function SupplierDetail() {
       {modal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setModal(null)}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            {/* Structural Modal */}
+            {modal === "structural" && (
+              <div>
+                <div className="flex items-center justify-between p-5 border-b border-gray-100">
+                  <h2 className="font-semibold text-gray-900">Structural Risk Details {supplier.name}</h2>
+                  <button onClick={() => setModal(null)}><X size={18} className="text-gray-400 hover:text-gray-600" /></button>
+                </div>
+                <div className="p-5 space-y-5">
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Revenue Distribution - Last 12 Months</h3>
+                    <ResponsiveContainer width="100%" height={220}>
+                      <BarChart data={structuralRevenueHistory}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                        <YAxis tick={{ fontSize: 11 }} tickFormatter={(value: number) => formatEuro(value)} />
+                        <Tooltip formatter={(value: number) => [formatEuro(Number(value)), "Revenue"]} />
+                        <Bar dataKey="revenue" fill="#8b5cf6" radius={[6, 6, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="bg-purple-50 rounded-xl p-4">
+                      <p className="text-xs text-gray-500">12M Average Revenue</p>
+                      <p className="text-xl font-bold text-purple-700 mt-1">{formatEuro(structuralAvgRevenue)}</p>
+                    </div>
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <p className="text-xs text-gray-500">Highest Month</p>
+                      <p className="text-xl font-bold text-gray-800 mt-1">{formatEuro(structuralMaxRevenue)}</p>
+                    </div>
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <p className="text-xs text-gray-500">Lowest Month</p>
+                      <p className="text-xl font-bold text-gray-800 mt-1">{formatEuro(structuralMinRevenue)}</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    Revenue trend is visualized against structural risk context (dependency level and supplier trend).
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Financial Modal */}
             {modal === "financial" && (
               <div>

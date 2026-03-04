@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Save, Users, Bell, Sliders, RotateCcw } from "lucide-react";
+import React from "react";
 
 const initialWeights = {
   financial: 35,
