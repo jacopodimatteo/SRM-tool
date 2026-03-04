@@ -114,7 +114,7 @@ export const suppliers: Supplier[] = [
     openAlerts: 4,
     alerts: [
       { id: "a1", type: "financial", description: "Credit score declined by 8 points in last 30 days", severity: "High", dateDetected: "2026-02-20", resolved: false },
-      { id: "a2", type: "compliance", description: "Social Security Clearence Certificates expiring in 18 days", severity: "Medium", dateDetected: "2026-02-15", resolved: false },
+      { id: "a2", type: "compliance", description: "ISO 9001 certification expiring in 18 days", severity: "Medium", dateDetected: "2026-02-15", resolved: false },
       { id: "a3", type: "esg", description: "Environmental audit overdue by 45 days", severity: "High", dateDetected: "2026-01-20", resolved: false },
       { id: "a4", type: "structural", description: "Single-source dependency identified in critical component", severity: "Medium", dateDetected: "2026-02-01", resolved: false },
     ],
@@ -160,7 +160,7 @@ export const suppliers: Supplier[] = [
     creditTrendVelocity: -0.5,
     openAlerts: 2,
     alerts: [
-      { id: "a5", type: "compliance", description: "Social Security Clearence Certificates renewal needed", severity: "Medium", dateDetected: "2026-02-10", resolved: false },
+      { id: "a5", type: "compliance", description: "Workers compensation policy renewal needed", severity: "Medium", dateDetected: "2026-02-10", resolved: false },
       { id: "a6", type: "esg", description: "Carbon reporting incomplete for Q4 2025", severity: "Low", dateDetected: "2026-01-28", resolved: false },
     ],
     documents: buildRequiredDocuments({
@@ -249,7 +249,7 @@ export const suppliers: Supplier[] = [
     creditTrendVelocity: 1.2,
     openAlerts: 3,
     alerts: [
-      { id: "a7", type: "compliance", description: "Certificate In Tax Matters is overdue for update", severity: "High", dateDetected: "2026-02-01", resolved: false },
+      { id: "a7", type: "compliance", description: "GDPR audit report overdue", severity: "High", dateDetected: "2026-02-01", resolved: false },
       { id: "a8", type: "structural", description: "Key personnel dependency risk identified", severity: "Medium", dateDetected: "2026-01-15", resolved: false },
       { id: "a9", type: "financial", description: "Delayed invoice payments detected (30+ days)", severity: "Low", dateDetected: "2026-02-18", resolved: false },
     ],
@@ -388,7 +388,7 @@ export const suppliers: Supplier[] = [
     openAlerts: 2,
     alerts: [
       { id: "a16", type: "esg", description: "Chemical waste disposal permit renewal needed", severity: "Medium", dateDetected: "2026-02-08", resolved: false },
-      { id: "a17", type: "compliance", description: "Business Liability Insurance document is missing", severity: "Medium", dateDetected: "2026-01-25", resolved: false },
+      { id: "a17", type: "compliance", description: "REACH compliance documentation incomplete", severity: "Medium", dateDetected: "2026-01-25", resolved: false },
     ],
     documents: buildRequiredDocuments({
       "Business Registration": { status: "Valid", expiryDate: "2027-09-01", lastUploaded: "2025-09-01", daysRemaining: 546 },
